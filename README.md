@@ -1,16 +1,16 @@
-**** 
+### Ex.No.: 8 CONFIGURING ANALOG PORT TO INTERFACE AN ANALOG SENSOR AND READ THE VALUES USING SERIAL PORT
 
-
-### Ex. No. :8 CONFIGURING ANALOG PORT TO INTEFACE AN ANALOG SENSOR AND READ THE VALUES USING SERIAL PORT
-## Date: 
-###  
+## Date: 3.11.23 
 
 ## Aim: 
-To configure ADC channel for interfacing an analog sensor and read the values on the com port 
-## Components required:
-STM 32 CUBE IDE , STM32 NUCLEO BOARD, CONNECTING CABLE, SERIAL PORT UTILITY , ANALOG SENSOR - 3.3V TYPE 
- ## Theory 
 
+To configure the ADC channel for interfacing an analog sensor and read the values on the COM port 
+
+## Components required:
+
+STM 32 CUBE IDE, STM32 NUCLEO BOARD, CONNECTING CABLE, SERIAL PORT UTILITY, ANALOG SENSOR - 3.3V TYPE 
+
+ ## Theory :
  
 ADCs are characterized by:
 
@@ -18,7 +18,7 @@ Resolution [bit]: the number of bits to represent a digital signal.
 Sampling rate [Hz]: how fast they work.
 
 ADC Symbol. 
-An 10-bit ADC with 1 kHz sampling rate has 256 (2⁸) levels in its digital signal and takes 1 millisecond to convert an analog signal into its digital form.
+A 10-bit ADC with 1 kHz sampling rate has 256 (2⁸) levels in its digital signal and takes 1 millisecond to convert an analog signal into its digital form.
 ![image](https://github.com/vasanthkumarch/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/36288975/bdbe1fe6-6913-46ca-aefd-726b6a406cf6)
 
 An analog signal is expressed in voltage [V] and other important features are:
@@ -33,22 +33,22 @@ Different Ways To Read STM32 ADC
 
 1 – The Polling Method
 
-It’s the easiest way in code in order to perform an analog to digital conversion using the ADC on an analog input channel. However, it’s not an efficient way in all cases as it’s considered to be a blocking way of using the ADC. As in this way, we start the A/D conversion and wait for the ADC until it completes the conversion so the CPU can resume processing the main code.
+It’s the easiest way in code in order to perform an analog-to-digital conversion using the ADC on an analog input channel. However, it’s not an efficient way in all cases as it’s considered to be a blocking way of using the ADC. As in this way, we start the A/D conversion and wait for the ADC until it completes the conversion so the CPU can resume processing the main code.
 
 2 – The Interrupt Method
 
 The interrupt method is an efficient way to do ADC conversion in a non-blocking manner, so the CPU can resume executing the main code routine until the ADC completes the conversion and fires an interrupt signal so the CPU can switch to the ISR context and save the conversion results for further processing.
 
-However, when you’re dealing with multiple channels in a circular mode or so, you’ll have periodic interrupts from the ADC that are too much for the CPU to handle. This will introduce jitter injection and interrupt latency and all sorts of timing issues to the system. This can be avoided by using DMA.
+However, when you’re dealing with multiple channels in a circular mode, you’ll have periodic interruptions from the ADC that are too much for the CPU to handle. This will introduce jitter injection interrupt latency and all sorts of timing issues to the system. This can be avoided by using DMA.
 
 3 – The DMA Method
 
-Lastly, the DMA method is the most efficient way of converting multiple ADC channels at very high rates and still transfers the results to the memory without CPU intervention which is so cool and time-saving technique.
+Lastly, the DMA method is the most efficient way of converting multiple ADC channels at very high rates. Still, it transfers the results to the memory without CPU intervention which is a cool and time-saving technique.
 
  
 
 The STM32 Nucleo Board
-The STM32 development board in use belongs to the NUCLEO family: the NUCLEO-G431RB is equipped with an STM32G431RB microcontroller, led, buttons, and connectors (Arduino shield compatible). It provides an easy and fast way to build prototypes.
+The STM32 development board in use belongs to the NUCLEO family: the NUCLEO-G431RB is equipped with an STM32G431RB microcontroller, LED, buttons, and connectors (Arduino shield compatible). It provides an easy and fast way to build prototypes.
 
 
 STM32 NUCLEO-G431RB development board.  
@@ -61,13 +61,13 @@ Capacity is calculated using the following expression:
 
 
 
-Let the plates have dimensions  w  = 12 mm; l  = 35 mm, then the area S  = 12*35 = 420 mm², and the distance between them d  = 3 mm, then the calculated electrical capacitance C =  1 pF .
+Let the plates have dimensions  w  = 12 mm; l  = 35 mm, then the area S  = 12*35 = 420 mm², and the distance between them d  = 3 mm, then the calculated electrical capacitance C =  1 pF.
 
 Capacitance calculation (dielectric: air)
-The geometric dimensions (area) S , as well as the distance between the plates d , do not change. To change the capacitance, it remains to change the substance between the plates, as long as it is air ε = 1 . What do you think? relative dielectric constant  of water ? Sources show ε = 81 .
+The geometric dimensions (area) S, as well as the distance between the plates d, do not change. To change the capacitance, it remains to change the substance between the plates, as long as it is air ε = 1. What do you think? the relative dielectric constant  of water? Sources show ε = 81.
 
 Capacitance calculation (dielectric: water)
-Full immersion in water will increase the capacity by 81 times ! The calculated capacitance C will no longer be 1 pF, but  100 pF .
+Full immersion in water will increase the capacity by 81 times! The calculated capacitance C will no longer be 1 pF, but  100 pF.
 
 
 
@@ -148,19 +148,62 @@ D0 pin is a digital output
 GND pin is a Ground
 This module also includes a potentiometer that will fix the threshold value, & the value can be evaluated by the comparator-LM393. The LED will turn on/off based on the threshold value.
 
+##  Program :
+```
+DEVELOPED BY : Sai Eswar Kandukuri
+REG NO : 212221240020
+```
+```
+#include "main.h"
+#include"stdio.h"
+uint32_t adcvalue;
+#if defined (_ICCARM) || defined (_ARMCC_VERSION)
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#elif defined(_GNUC_)
+   
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#endif  
 
-##  Program 
+while(1)
+{
 
+	HAL_ADC_Start(&hadc1);
+			HAL_ADC_PollForConversion(&hadc1,100);
+			adcvalue = HAL_ADC_GetValue(&hadc1);
+			HAL_ADC_Stop(&hadc1);
+			HAL_Delay(500);
+			printf("ADC VALUE:%ld\n",adcvalue);
 
- 
+}
 
-## Result :
- 
-## Output  :
+PUTCHAR_PROTOTYPE
+{
 
+  HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 0xFFFF);
 
+  return ch;
+}
+```
+## Output :
 
+## Board Settings and its connections :
 
+![image](https://github.com/22008686/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/118916413/92e1ed6a-3901-4ac4-b2ca-028967a6276f)
 
+ ![image](https://github.com/22008686/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/118916413/798068f2-d560-4784-b6b6-f3b564b7f610)
 
-****
+ ![image](https://github.com/22008686/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/118916413/da661695-5b75-459f-9eb9-01ac14dfab88)
+
+## Normal ADC Value :
+
+![image](https://github.com/22008686/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/118916413/60d32380-bd95-4837-8b5a-c9dc6fa8fe80)
+
+## After Light Dipping of soil-moisture-sensor-device in water :
+
+![image](https://github.com/22008686/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/118916413/4e961b11-4397-4da1-8267-3571e9bc3a5c)
+
+![image](https://github.com/22008686/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/118916413/33c919e3-3259-426e-8295-5ae0eaeafc09)
+
+## Result:
+
+Hence,the configuring analog port to inteface an analog sensor and read the values using serial port runned successfully.
