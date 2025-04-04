@@ -1,7 +1,5 @@
 # Ex.No.: 8 CONFIGURING ANALOG PORT TO INTERFACE AN ANALOG SENSOR AND READ THE VALUES USING SERIAL PORT
 
-## Date: 3.11.23 
-
 ## Aim: 
 
 To configure the ADC channel for interfacing an analog sensor and read the values on the COM port 
